@@ -1,44 +1,25 @@
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Only POST requests allowed' });
+  }
 
-import { useState } from "react";
+  const { prompt } = req.body;
 
-export default function Home() {
-  const [input, setInput] = useState("");
-  const [response, setResponse] = useState("");
-  const [thinking, setThinking] = useState(false);
+  const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'llama3-70b-8192',
+      messages: [
+        { role: 'system', content: "You are LIFE, a helpful assistant offering clear, practical advice in everyday language." },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  });
 
-  const handleAsk = async () => {
-    setThinking(true);
-    const res = await fetch("/api/groq", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: input }),
-    });
-    const data = await res.json();
-    setResponse(data.reply);
-    setThinking(false);
-  };
-
-  return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-4xl font-bold mb-4">LIFE</h1>
-      <textarea
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="What’s your problem today?"
-        className="w-full max-w-xl p-4 border rounded mb-2"
-      />
-      <button
-        onClick={handleAsk}
-        className="bg-blue-600 text-white px-6 py-2 rounded w-full max-w-xl"
-      >
-        Ask LIFE
-      </button>
-      {thinking && <p className="mt-2 text-gray-500">Thinking...</p>}
-      {response && (
-        <div className="mt-4 p-4 bg-white border rounded shadow max-w-xl">
-          <p>{response}</p>
-        </div>
-      )}
-    </main>
-  );
+  const data = await groqRes.json();
+  return res.status(200).json({ answer: data.choices[0]?.message?.content });
 }
