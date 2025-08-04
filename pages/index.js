@@ -14,7 +14,7 @@ export default function Home() {
       body: JSON.stringify({ prompt: input }),
     });
     const data = await res.json();
-    setResponse(data.reply);
+    setResponse(data.answer);
     setThinking(false);
   };
 
