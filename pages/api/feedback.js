@@ -1,5 +1,4 @@
-import { db } from '../../firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { dbAdmin } from '../../lib/firebaseAdmin';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -9,16 +8,17 @@ export default async function handler(req, res) {
   const { question, answer, rating, comments } = req.body;
 
   try {
-    const docRef = await addDoc(collection(db, 'feedback'), {
+    const docRef = await dbAdmin.collection('feedback').add({
       question,
       answer,
       rating,
       comments,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
+
     res.status(200).json({ message: 'Feedback submitted', id: docRef.id });
-  } catch (err) {
-    console.error('Error writing feedback:', err);
+  } catch (error) {
+    console.error('Error writing feedback:', error);
     res.status(500).json({ message: 'Error saving feedback' });
   }
 }
