@@ -30,38 +30,37 @@ export default function Home() {
 
   // Submit Feedback to Firestore
   const handleFeedback = async () => {
-    if (!rating) {
-      alert("Please select a rating before submitting feedback.");
+    if (!rating && !comments.trim()) {
+      alert("Please provide at least a rating or a comment before submitting.");
       return;
     }
 
     setLoadingFeedback(true);
 
-    const feedback = {
-      question: input,
-      answer: response,
-      rating,
-      comments,
-    };
-
     try {
       const res = await fetch("/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(feedback),
+        body: JSON.stringify({
+          question: input,
+          answer: response,
+          rating,
+          comments,
+        }),
       });
 
-      if (!res.ok) throw new Error("Failed to submit feedback");
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to submit feedback");
+      }
+
       console.log("✅ Feedback saved:", data);
       alert("✅ Thank you! Your feedback has been recorded.");
 
-      // Reset form for next question
+      // Reset form for next feedback
       setRating(0);
       setComments("");
-      setInput("");
-      setResponse("");
     } catch (err) {
       console.error("Error submitting feedback:", err);
       alert("❌ Could not save feedback. Please try again.");
