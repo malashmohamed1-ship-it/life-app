@@ -1,6 +1,8 @@
 import { dbAdmin } from '../../lib/firebaseAdmin';
 
 export default async function handler(req, res) {
+  console.log("📩 Incoming feedback request:", req.method, req.body);
+  
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Only POST requests allowed' });
   }
