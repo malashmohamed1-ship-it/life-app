@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -7,6 +7,13 @@ export default function Home() {
   const [rating, setRating] = useState(0);
   const [comments, setComments] = useState("");
   const [loadingFeedback, setLoadingFeedback] = useState(false);
+  const [feedbackList, setFeedbackList] = useState([]);
+
+  // Load saved feedbacks on page load
+  useEffect(() => {
+    const saved = localStorage.getItem("life_feedback");
+    if (saved) setFeedbackList(JSON.parse(saved));
+  }, []);
 
   // Ask LIFE
   const handleAsk = async () => {
@@ -28,8 +35,8 @@ export default function Home() {
     }
   };
 
-  // Submit Feedback to Firestore
-  const handleFeedback = async () => {
+  // Save feedback locally
+  const handleFeedback = () => {
     if (!rating && !comments.trim()) {
       alert("Please provide at least a rating or a comment before submitting.");
       return;
@@ -37,36 +44,23 @@ export default function Home() {
 
     setLoadingFeedback(true);
 
-    try {
-      const res = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: input,
-          answer: response,
-          rating,
-          comments,
-        }),
-      });
+    const newFeedback = {
+      question: input,
+      answer: response,
+      rating,
+      comments,
+      createdAt: new Date().toISOString(),
+    };
 
-      const data = await res.json();
+    const updatedList = [...feedbackList, newFeedback];
+    setFeedbackList(updatedList);
+    localStorage.setItem("life_feedback", JSON.stringify(updatedList));
 
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to submit feedback");
-      }
+    alert("✅ Feedback saved locally! (Will sync to cloud later)");
 
-      console.log("✅ Feedback saved:", data);
-      alert("✅ Thank you! Your feedback has been recorded.");
-
-      // Reset form for next feedback
-      setRating(0);
-      setComments("");
-    } catch (err) {
-      console.error("Error submitting feedback:", err);
-      alert("❌ Could not save feedback. Please try again.");
-    } finally {
-      setLoadingFeedback(false);
-    }
+    setRating(0);
+    setComments("");
+    setLoadingFeedback(false);
   };
 
   const renderFormattedResponse = (text) => {
