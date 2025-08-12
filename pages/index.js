@@ -8,11 +8,18 @@ export default function Home() {
   const [comments, setComments] = useState("");
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [feedbackList, setFeedbackList] = useState([]);
+  const [showDashboard, setShowDashboard] = useState(false);
 
-  // Load saved feedbacks on page load
+  // Load feedback on page load
   useEffect(() => {
     const saved = localStorage.getItem("life_feedback");
-    if (saved) setFeedbackList(JSON.parse(saved));
+    if (saved) {
+      try {
+        setFeedbackList(JSON.parse(saved));
+      } catch {
+        setFeedbackList([]);
+      }
+    }
   }, []);
 
   // Ask LIFE
@@ -56,7 +63,7 @@ export default function Home() {
     setFeedbackList(updatedList);
     localStorage.setItem("life_feedback", JSON.stringify(updatedList));
 
-    alert("✅ Feedback saved locally! (Will sync to cloud later)");
+    alert("✅ Feedback saved locally! (Sync to cloud later)");
 
     setRating(0);
     setComments("");
@@ -79,8 +86,51 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-start p-6">
       <h1 className="text-4xl font-bold mb-4">LIFE</h1>
+
+      {/* Dashboard Toggle */}
+      <button
+        onClick={() => setShowDashboard(!showDashboard)}
+        className="mb-4 bg-purple-600 text-white px-4 py-2 rounded"
+      >
+        {showDashboard ? "Hide Feedback Dashboard" : "Show Feedback Dashboard"}
+      </button>
+
+      {/* Feedback Dashboard */}
+      {showDashboard && (
+        <div className="bg-white border rounded shadow p-4 w-full max-w-xl mb-6">
+          <h2 className="text-xl font-bold mb-3">📊 Feedback Dashboard</h2>
+          {feedbackList.length === 0 ? (
+            <p className="text-gray-500">No feedback collected yet.</p>
+          ) : (
+            feedbackList.map((fb, i) => (
+              <div
+                key={i}
+                className="border-b last:border-none pb-2 mb-2 text-sm"
+              >
+                <p>
+                  <strong>Q:</strong> {fb.question}
+                </p>
+                <p>
+                  <strong>A:</strong> {fb.answer}
+                </p>
+                <p>
+                  <strong>⭐ Rating:</strong> {fb.rating}
+                </p>
+                {fb.comments && (
+                  <p>
+                    <strong>💬 Comments:</strong> {fb.comments}
+                  </p>
+                )}
+                <p className="text-gray-400 text-xs">
+                  {new Date(fb.createdAt).toLocaleString()}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Ask LIFE */}
       <textarea
