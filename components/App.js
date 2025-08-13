@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MedicalReminder from './MedicalReminder';
 
-export default function LifeApp() {
+export default function App() {
   const [answer, setAnswer] = useState('Your AI-powered answer will appear here.');
   const [feedback, setFeedback] = useState('');
 
@@ -11,40 +11,40 @@ export default function LifeApp() {
 
   function handleSubmitFeedback() {
     if (!feedback.trim()) return alert('Please enter feedback before submitting.');
-    // Save feedback logic here, e.g., API call or localStorage
     alert('Thanks for your feedback!');
     setFeedback('');
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">LIFE AI Assistant</h1>
+    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
+      <h1 style={{ textAlign: 'center', fontSize: '2rem', marginBottom: '1rem' }}>LIFE AI Assistant</h1>
 
-      <section className="answer-section bg-white p-5 rounded shadow mb-8">
-        <h2 className="text-xl font-semibold mb-3">Answer:</h2>
-        <p className="text-gray-700 mb-4 whitespace-pre-wrap">{answer}</p>
+      <section style={{ backgroundColor: 'white', padding: '1rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Answer:</h2>
+        <p style={{ whiteSpace: 'pre-wrap', color: '#374151', marginBottom: '1rem' }}>{answer}</p>
 
-        <div className="feedback mb-6">
-          <label htmlFor="feedback" className="block font-medium mb-1">
-            Your Feedback:
-          </label>
-          <textarea
-            id="feedback"
-            rows="3"
-            value={feedback}
-            onChange={handleFeedbackChange}
-            className="w-full border rounded p-2"
-            placeholder="Type your feedback here..."
-          />
-          <button
-            onClick={handleSubmitFeedback}
-            className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-          >
-            Submit Feedback
-          </button>
+        <label htmlFor="feedback" style={{ display: 'block', fontWeight: '600', marginBottom: '0.25rem' }}>
+          Your Feedback:
+        </label>
+        <textarea
+          id="feedback"
+          rows="3"
+          value={feedback}
+          onChange={handleFeedbackChange}
+          placeholder="Type your feedback here..."
+          style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', marginBottom: '0.5rem' }}
+        />
+
+        <button
+          onClick={handleSubmitFeedback}
+          style={{ backgroundColor: '#16a34a', color: 'white', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', border: 'none' }}
+        >
+          Submit Feedback
+        </button>
+
+        <div style={{ marginTop: '2rem' }}>
+          <MedicalReminder />
         </div>
-
-        <MedicalReminder />
       </section>
     </div>
   );
