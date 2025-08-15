@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import DarkModeToggle from "../components/DarkModeToggle";
 import MedicalReminder from "../components/MedicalReminder";
 import Toast from "../components/Toast";
+import Feedback from './Feedback';
+<Feedback />
+
 
 export default function Home() {
   const [answer, setAnswer] = useState("Your AI-powered answer will appear here.");
