@@ -1,25 +1,6 @@
-// pages/feedback.js
 import { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from // lib/firebase.js
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-
-// Your Firebase config
-const firebaseConfig = {
-  apiKey: AIzaSyAG-iJcrjxtwDP-u65kM7MOKUvabE4_KJI,
-  authDomain: life-app-752db.firebaseapp.com,
-  projectId: life-app-752db,
-  storageBucket: life-app-752db.firebasestorage.app,
-  messagingSenderId: 532680973641,
-  appId: 1:532680973641:web:e27b88f43175894d808e98,
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Export Firestore database
-export const db = getFirestore(app);; // <- using the new firebase.js
+import { db } from '../lib/firebase';
 
 export default function Feedback() {
   const [feedback, setFeedback] = useState('');
@@ -29,16 +10,22 @@ export default function Feedback() {
     e.preventDefault();
     setStatus('Submitting...');
 
+    if (!feedback.trim()) {
+      setStatus('❌ Feedback cannot be empty.');
+      return;
+    }
+
     try {
-      await addDoc(collection(db, 'feedback'), {
-        text: feedback,
+      const docRef = await addDoc(collection(db, 'feedback'), {
+        text: feedback.trim(),
         createdAt: serverTimestamp(),
       });
+      console.log('✅ Feedback saved with ID:', docRef.id);
       setStatus('✅ Feedback submitted successfully!');
       setFeedback('');
     } catch (error) {
-      console.error('Error adding feedback: ', error);
-      setStatus('❌ Error submitting feedback.');
+      console.error('❌ Firestore Error:', error);
+      setStatus(`❌ Submission failed: ${error.message}`);
     }
   };
 
@@ -61,6 +48,9 @@ export default function Feedback() {
         </button>
       </form>
       {status && <p className="mt-3 text-sm">{status}</p>}
+      <p className="mt-2 text-xs text-gray-400">
+        Check your browser console for detailed logs.
+      </p>
     </div>
   );
 }
