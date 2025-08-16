@@ -6,6 +6,14 @@ import Toast from "../components/Toast";
 import Feedback from './Feedback';
 <Feedback />
 
+  export default function Home() {
+  return (
+    <div style={{ display: "flex", height: "100vh", alignItems: "center", justifyContent: "center" }}>
+      <h1>🚀 Welcome to LIFE App!</h1>
+    </div>
+  );
+}
+
 
 export default function Home() {
   const [answer, setAnswer] = useState("Your AI-powered answer will appear here.");
